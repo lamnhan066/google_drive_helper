@@ -6,22 +6,14 @@ import 'package:google_drive_helper/src/utils/account_information_model.dart';
 import 'package:google_drive_helper/src/google_drive_helper_desktop.dart';
 import 'package:google_drive_helper/src/google_drive_helper_interface.dart';
 import 'package:google_drive_helper/src/google_drive_helper_mobile.dart';
-import 'package:googleapis/drive/v3.dart';
+
+import 'src/google_drive_helper_stub.dart';
 
 class GoogleDriveHelper implements GoogleDriveHelperInterface {
   final GoogleDriveHelperInterface _delegate =
       io.Platform.isAndroid || io.Platform.isIOS
           ? GoogleDriveHelperMobile()
           : GoogleDriveHelperDesktop();
-
-  @override
-  Future delete(String fileId) => _delegate.delete(fileId);
-
-  @override
-  Future download(String fileId) => _delegate.download(fileId);
-
-  @override
-  Future<List> fileList() => _delegate.fileList();
 
   @override
   void initial({String? desktopId, String? desktopSecret}) =>
@@ -37,16 +29,11 @@ class GoogleDriveHelper implements GoogleDriveHelperInterface {
   Future<void> signOut() => _delegate.signOut();
 
   @override
-  Future update(String fileId, String fileName, String content) =>
-      _delegate.update(fileId, fileName, content);
-
-  @override
-  Future<File> upload(String fileName, String content) =>
-      _delegate.upload(fileName, content);
-
-  @override
   AccountInfo? get accountInfo => _delegate.accountInfo;
 
   @override
   Future<void> disconnect() => _delegate.disconnect();
+
+  @override
+  GoogleDriveHelperStub? get getDrive => _delegate.getDrive;
 }

@@ -4,10 +4,10 @@ import 'utils/google_auth_client.dart';
 import 'utils/google_file_type.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
-class GoogleDriveHelper {
+class GoogleDriveHelperStub {
   final drive.DriveApi driveApi;
 
-  GoogleDriveHelper(GoogleAuthClient client)
+  GoogleDriveHelperStub(GoogleAuthClient client)
       : driveApi = drive.DriveApi(client);
 
   Future<List> fileList({GoogleFileType fileType = GoogleFileType.all}) async {
