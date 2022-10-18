@@ -9,12 +9,12 @@ import 'google_drive_helper_stub.dart';
 import 'google_sign_in_desktop/google_user_model.dart';
 
 class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
-  late final GoogleSignInDesktop googleSignIn;
-  Stream<bool> get onSignChanged => googleSignIn.onSignChanged;
-  bool get isSigned => googleSignIn.isSigned;
-  AuthClient get authClient => googleSignIn.authClient;
-  GoogleUser get user => googleSignIn.user;
-  Map<String, String> get headers => googleSignIn.headers;
+  late GoogleSignInDesktop _googleSignIn;
+  Stream<bool> get onSignChanged => _googleSignIn.onSignChanged;
+  bool get isSigned => _googleSignIn.isSigned;
+  AuthClient get authClient => _googleSignIn.authClient;
+  GoogleUser get user => _googleSignIn.user;
+  Map<String, String> get headers => _googleSignIn.headers;
 
   bool _isInitialized = false;
 
@@ -23,11 +23,11 @@ class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
     if (_isInitialized) return;
     _isInitialized = true;
 
-    await googleSignIn.initial();
+    await _googleSignIn.initial();
 
     assert(desktopId != null, 'desktopId must be non-null on Desktop');
 
-    googleSignIn = GoogleSignInDesktop(desktopId!, desktopSecret);
+    _googleSignIn = GoogleSignInDesktop(desktopId!, desktopSecret);
     final isSigned = await signInSilently();
     if (isSigned) {
       print('Đã đăng nhập Google tự động');
@@ -38,10 +38,11 @@ class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
 
   @override
   Future<bool> signIn() async {
-    final isSigned = await googleSignIn.signIn(true);
+    final isSigned = await _googleSignIn.signIn(true);
 
     if (isSigned) {
-      _getDrive = GoogleDriveHelperStub(GoogleAuthClient(googleSignIn.headers));
+      _getDrive =
+          GoogleDriveHelperStub(GoogleAuthClient(_googleSignIn.headers));
 
       return true;
     } else {
@@ -52,9 +53,10 @@ class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
 
   @override
   Future<bool> signInSilently() async {
-    final isSigned = await googleSignIn.signInSilently();
+    final isSigned = await _googleSignIn.signInSilently();
     if (isSigned) {
-      _getDrive = GoogleDriveHelperStub(GoogleAuthClient(googleSignIn.headers));
+      _getDrive =
+          GoogleDriveHelperStub(GoogleAuthClient(_googleSignIn.headers));
       print('Đã đăng nhập Google tự động');
 
       return true;
@@ -69,8 +71,8 @@ class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
   Future<void> signOut() async {
     _isInitialized = false;
 
-    googleSignIn.dispose();
-    await googleSignIn.signOut();
+    _googleSignIn.dispose();
+    await _googleSignIn.signOut();
   }
 
   @override
