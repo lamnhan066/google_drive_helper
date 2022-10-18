@@ -23,11 +23,10 @@ class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
     if (_isInitialized) return;
     _isInitialized = true;
 
-    await _googleSignIn.initial();
-
     assert(desktopId != null, 'desktopId must be non-null on Desktop');
 
     _googleSignIn = GoogleSignInDesktop(desktopId!, desktopSecret);
+    await _googleSignIn.initial();
     final isSigned = await signInSilently();
     if (isSigned) {
       print('Đã đăng nhập Google tự động');
