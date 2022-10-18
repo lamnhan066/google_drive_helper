@@ -74,6 +74,20 @@ class GoogleDriveHelperStub {
     return result;
   }
 
+  Future<drive.File?> createFolder(
+    String folderName, {
+    String? parentId,
+  }) async {
+    final drive.File file = drive.File();
+    file.parents = parentId != null ? [parentId] : <String>['appDataFolder'];
+    file.name = folderName;
+    file.mimeType = 'application/vnd.google-apps.folder';
+
+    final drive.File result = await driveApi.files.create(file);
+
+    return result;
+  }
+
   Future delete(String fileId) async {
     await driveApi.files.delete(fileId);
   }
