@@ -23,6 +23,8 @@ class GoogleDriveHelperDesktop implements GoogleDriveHelperInterface {
     if (_isInitialized) return;
     _isInitialized = true;
 
+    await googleSignIn.initial();
+
     assert(desktopId != null, 'desktopId must be non-null on Desktop');
 
     googleSignIn = GoogleSignInDesktop(desktopId!, desktopSecret);
