@@ -1,0 +1,45 @@
+name: google_drive_helper
+description: A new Flutter plugin project.
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  hive: ^2.2.3
+  path_provider: ^2.0.11
+
+  universal_platform: ^1.0.0+1
+  path: ^1.8.1
+
+  google_sign_in: ^5.0.4
+  google_sign_in_dartio:
+    git: https://github.com/helpisdev/google_sign_in_dart
+  googleapis: ^9.0.0
+  http: ^0.13.5
+
+  firebase_core: ^1.19.2
+  firebase_core_desktop: ^1.0.1
+  firebase_auth: ^3.11.2
+  firebase_auth_desktop: ^1.0.1
+  googleapis_auth: ^1.3.1
+  url_launcher: ^6.1.5
+  encrypt: ^5.0.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+ 
