@@ -104,4 +104,14 @@ class GoogleDriveHelperStub {
     return const Utf8Decoder()
         .convert(contentList); // Utf8Decoder().convert(contentList);
   }
+
+  Future<void> deleteAll({GoogleFileType fileType = GoogleFileType.all}) async {
+    final list = await fileList(fileType: fileType);
+    for (var element in list) {
+      if (element.id != null) {
+        print('Đang xóa file có tên: ${element.name}, id: ${element.id}');
+        await delete(element.id!);
+      }
+    }
+  }
 }
