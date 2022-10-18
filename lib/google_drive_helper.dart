@@ -9,6 +9,9 @@ import 'package:google_drive_helper/src/google_drive_helper_mobile.dart';
 
 import 'src/google_drive_helper_stub.dart';
 
+export 'src/utils/account_information_model.dart';
+export 'src/utils/google_file_type.dart';
+
 class GoogleDriveHelper implements GoogleDriveHelperInterface {
   final GoogleDriveHelperInterface _delegate =
       io.Platform.isAndroid || io.Platform.isIOS
