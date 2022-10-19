@@ -1,14 +1,18 @@
 import 'dart:convert';
 
-import 'utils/google_auth_client.dart';
+import 'package:googleapis_auth/googleapis_auth.dart' show AuthClient;
+
 import 'utils/google_file_type.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
-class GoogleDriveHelperStub {
+class GoogleDriveHelper {
   final drive.DriveApi driveApi;
+  final String spaces;
 
-  GoogleDriveHelperStub(GoogleAuthClient client)
-      : driveApi = drive.DriveApi(client);
+  GoogleDriveHelper(
+    AuthClient client, {
+    this.spaces = 'appDataFolder',
+  }) : driveApi = drive.DriveApi(client);
 
   Future<List> fileList({GoogleFileType fileType = GoogleFileType.all}) async {
     final results = <drive.File>[];
@@ -27,7 +31,7 @@ class GoogleDriveHelperStub {
     }
     do {
       final fileList = await driveApi.files.list(
-        spaces: 'appDataFolder',
+        spaces: spaces,
         pageToken: nextPageToken,
         $fields: '*',
         q: q,
@@ -41,7 +45,7 @@ class GoogleDriveHelperStub {
 
   Future<String> update(String fileId, String fileName, String content) async {
     final drive.File file = drive.File();
-    file.parents = <String>['appDataFolder'];
+    file.parents = <String>[spaces];
     file.name = fileName;
 
     final List<int> codeUnits = const Utf8Encoder().convert(content);
@@ -60,7 +64,7 @@ class GoogleDriveHelperStub {
   Future<drive.File> upload(String fileName, String content,
       {String? parentID}) async {
     final drive.File file = drive.File();
-    file.parents = parentID != null ? [parentID] : <String>['appDataFolder'];
+    file.parents = parentID != null ? [parentID] : <String>[spaces];
     file.name = fileName;
 
     final List<int> codeUnits = const Utf8Encoder().convert(content);
@@ -79,7 +83,7 @@ class GoogleDriveHelperStub {
     String? parentId,
   }) async {
     final drive.File file = drive.File();
-    file.parents = parentId != null ? [parentId] : <String>['appDataFolder'];
+    file.parents = parentId != null ? [parentId] : <String>[spaces];
     file.name = folderName;
     file.mimeType = 'application/vnd.google-apps.folder';
 
@@ -109,7 +113,6 @@ class GoogleDriveHelperStub {
     final list = await fileList(fileType: fileType);
     for (var element in list) {
       if (element.id != null) {
-        print('Đang xóa file có tên: ${element.name}, id: ${element.id}');
         await delete(element.id!);
       }
     }
