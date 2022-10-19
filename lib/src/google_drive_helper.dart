@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:googleapis_auth/googleapis_auth.dart' show AuthClient;
+import 'package:http/http.dart';
 
 import 'utils/google_file_type.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -10,7 +9,7 @@ class GoogleDriveHelper {
   final String spaces;
 
   GoogleDriveHelper(
-    AuthClient client, {
+    BaseClient client, {
     this.spaces = 'appDataFolder',
   }) : driveApi = drive.DriveApi(client);
 
