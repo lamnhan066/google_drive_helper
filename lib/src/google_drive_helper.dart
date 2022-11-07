@@ -5,22 +5,31 @@ import 'utils/google_file_type.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 class GoogleDriveHelper {
-  final drive.DriveApi driveApi;
-  final String spaces;
+  late drive.DriveApi _driveApi;
+  late String _spaces;
 
-  GoogleDriveHelper(
-    BaseClient client, {
-    this.spaces = 'appDataFolder',
-  }) : driveApi = drive.DriveApi(client);
+  /// Create an instance
+  GoogleDriveHelper();
 
-  Future<List<drive.File>> fileList(
-      {GoogleFileType fileType = GoogleFileType.all}) async {
+  /// Initialize the plugin
+  void initial({
+    required BaseClient client,
+    String spaces = 'appDataFolder',
+  }) {
+    _driveApi = drive.DriveApi(client);
+    _spaces = spaces;
+  }
+
+  /// Get list of all files with param [fileType]
+  Future<List<drive.File>> fileList({
+    GoogleFileType fileType = GoogleFileType.all,
+  }) async {
     final results = <drive.File>[];
     String? nextPageToken;
     final q = fileType.toQ;
     do {
-      final fileList = await driveApi.files.list(
-        spaces: spaces,
+      final fileList = await _driveApi.files.list(
+        spaces: _spaces,
         pageToken: nextPageToken,
         $fields: '*',
         q: q,
@@ -32,16 +41,23 @@ class GoogleDriveHelper {
     return results;
   }
 
-  Future<String> update(String fileId, String fileName, String content) async {
+  Future<String> update({
+    required String fileId,
+    String? fileName,
+    required String content,
+  }) async {
     final List<int> codeUnits = const Utf8Encoder().convert(content);
 
-    return updateAsBytes(fileId, fileName, codeUnits);
+    return updateAsBytes(fileId: fileId, fileName: fileName, bytes: codeUnits);
   }
 
-  Future<String> updateAsBytes(
-      String fileId, String fileName, List<int> bytes) async {
+  Future<String> updateAsBytes({
+    required String fileId,
+    String? fileName,
+    required List<int> bytes,
+  }) async {
     final drive.File file = drive.File();
-    file.parents = <String>[spaces];
+    file.parents = <String>[_spaces];
     file.name = fileName;
 
     final Stream<List<int>> mediaStream =
@@ -49,50 +65,60 @@ class GoogleDriveHelper {
 
     final drive.Media media = drive.Media(mediaStream, bytes.length);
 
-    final drive.File result = await driveApi.files
+    final drive.File result = await _driveApi.files
         .update(file, fileId, uploadMedia: media, $fields: '*');
 
     return result.id ?? '';
   }
 
-  Future<drive.File> upload(String fileName, String content,
-      {String? parentID}) async {
+  Future<drive.File> upload({
+    String? fileName,
+    required String content,
+    String? parentID,
+  }) async {
     final List<int> codeUnits = const Utf8Encoder().convert(content);
 
-    return uploadAsBytes(fileName, codeUnits, parentID: parentID);
+    return uploadAsBytes(
+      fileName: fileName,
+      bytes: codeUnits,
+      parentID: parentID,
+    );
   }
 
-  Future<drive.File> uploadAsBytes(String fileName, List<int> bytes,
-      {String? parentID}) async {
+  Future<drive.File> uploadAsBytes({
+    String? fileName,
+    required List<int> bytes,
+    String? parentID,
+  }) async {
     final drive.File file = drive.File();
-    file.parents = parentID != null ? [parentID] : <String>[spaces];
+    file.parents = parentID != null ? [parentID] : <String>[_spaces];
     file.name = fileName;
     final Stream<List<int>> mediaStream =
         Future<List<int>>.value(bytes).asStream().asBroadcastStream();
     final drive.Media media = drive.Media(mediaStream, bytes.length);
 
     final drive.File result =
-        await driveApi.files.create(file, uploadMedia: media, $fields: '*');
+        await _driveApi.files.create(file, uploadMedia: media, $fields: '*');
 
     return result;
   }
 
-  Future<drive.File?> createFolder(
-    String folderName, {
+  Future<drive.File?> createFolder({
+    String? folderName,
     String? parentId,
   }) async {
     final drive.File file = drive.File();
-    file.parents = parentId != null ? [parentId] : <String>[spaces];
+    file.parents = parentId != null ? [parentId] : <String>[_spaces];
     file.name = folderName;
     file.mimeType = 'application/vnd.google-apps.folder';
 
-    final drive.File result = await driveApi.files.create(file);
+    final drive.File result = await _driveApi.files.create(file);
 
     return result;
   }
 
   Future delete(String fileId) async {
-    await driveApi.files.delete(fileId);
+    await _driveApi.files.delete(fileId);
   }
 
   /// Use downloadAsBytes if you want to return as List<int>
@@ -101,7 +127,7 @@ class GoogleDriveHelper {
   }
 
   Future<List<int>> downloadAsBytes(String fileId) async {
-    final drive.Media result = await driveApi.files.get(fileId,
+    final drive.Media result = await _driveApi.files.get(fileId,
         downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
 
     // Convert from multiple list from stream to list
