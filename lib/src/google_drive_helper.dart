@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
 
@@ -11,8 +12,9 @@ class GoogleDriveHelper {
   /// Create an instance
   GoogleDriveHelper();
 
-  /// Initialize the plugin
-  void initial({
+  /// Initialize the plugin, [client] is auth client and can be got from `google_sign_in_helper` plugin
+  /// or `google_sign_in`. Default [spaces] is appDataFolder.
+  void initialize({
     required BaseClient client,
     String spaces = 'appDataFolder',
   }) {
@@ -41,6 +43,7 @@ class GoogleDriveHelper {
     return results;
   }
 
+  /// Update file with [fileId]
   Future<String> update({
     required String fileId,
     String? fileName,
@@ -51,6 +54,7 @@ class GoogleDriveHelper {
     return updateAsBytes(fileId: fileId, fileName: fileName, bytes: codeUnits);
   }
 
+  /// Update file with [fileId] as bytes content.
   Future<String> updateAsBytes({
     required String fileId,
     String? fileName,
@@ -71,6 +75,7 @@ class GoogleDriveHelper {
     return result.id ?? '';
   }
 
+  /// Upload file as String
   Future<drive.File> upload({
     String? fileName,
     required String content,
@@ -85,6 +90,7 @@ class GoogleDriveHelper {
     );
   }
 
+  /// Upload file as bytes
   Future<drive.File> uploadAsBytes({
     String? fileName,
     required List<int> bytes,
@@ -103,6 +109,7 @@ class GoogleDriveHelper {
     return result;
   }
 
+  /// Create folder
   Future<drive.File?> createFolder({
     String? folderName,
     String? parentId,
@@ -117,15 +124,17 @@ class GoogleDriveHelper {
     return result;
   }
 
+  /// Delete file with [fileId]
   Future delete(String fileId) async {
     await _driveApi.files.delete(fileId);
   }
 
-  /// Use downloadAsBytes if you want to return as List<int>
+  /// Download file and return as String
   Future<String> download(String fileId) async {
     return const Utf8Decoder().convert(await downloadAsBytes(fileId));
   }
 
+  /// Download file and return as bytes
   Future<List<int>> downloadAsBytes(String fileId) async {
     final drive.Media result = await _driveApi.files.get(fileId,
         downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
