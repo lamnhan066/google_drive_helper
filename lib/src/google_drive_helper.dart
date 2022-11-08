@@ -9,6 +9,9 @@ class GoogleDriveHelper {
   late drive.DriveApi _driveApi;
   late String _spaces;
 
+  /// To check whether the [initialize] is called or not
+  bool isInitialized = false;
+
   /// Create an instance
   GoogleDriveHelper();
 
@@ -20,6 +23,8 @@ class GoogleDriveHelper {
   }) {
     _driveApi = drive.DriveApi(client);
     _spaces = spaces;
+
+    isInitialized = true;
   }
 
   /// Get list of all files with param [fileType]
