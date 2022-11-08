@@ -17,7 +17,7 @@ class GoogleDriveHelper {
 
   /// Initialize the plugin, [client] is auth client and can be got from `google_sign_in_helper` plugin
   /// or `google_sign_in`. Default [spaces] is appDataFolder.
-  void initialize({
+  void initial({
     required BaseClient client,
     String spaces = 'appDataFolder',
   }) {
