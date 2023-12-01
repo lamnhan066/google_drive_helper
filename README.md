@@ -7,13 +7,7 @@ Make it easier for you to use google drive on all platforms.
 **Create an instance:**
 
 ``` dart
-final googleDriveHelper = GoogleDriveHelper();
-```
-
-**Initialize the instance:**
-
-``` dart
-googleDriveHelper.initial(
+final googleDriveHelper = GoogleDriveHelper(
     // Get this value from [google_sign_in_helper] plugin or using [AuthClient] from [google_sign_in] plugin
     client: googleSignInHelper.client,
     spaces: 'appDataFolder',

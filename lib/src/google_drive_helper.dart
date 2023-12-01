@@ -1,33 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:http/http.dart';
 
 import 'utils/google_file_type.dart';
-import 'package:googleapis/drive/v3.dart' as drive;
 
 class GoogleDriveHelper {
   late drive.DriveApi _driveApi;
-  late String _spaces;
+  late String spaces;
 
-  /// To check whether the [initialize] is called or not
-  bool isInitialized = false;
-
-  /// Create an instance
-  GoogleDriveHelper();
-
-  /// Initialize the plugin, [client] is auth client and can be got from `google_sign_in_helper` plugin
-  /// or `google_sign_in`. Default [spaces] is appDataFolder.
-  void initial({
+  /// Create an instance.
+  ///
+  /// [client] is the authenticated client and can be got from `google_sign_in_helper` plugin
+  /// or `google_sign_in`. Default [spaces] is `appDataFolder`.
+  GoogleDriveHelper({
     required BaseClient client,
-    String spaces = 'appDataFolder',
+    this.spaces = 'appDataFolder',
   }) {
     _driveApi = drive.DriveApi(client);
-    _spaces = spaces;
-
-    isInitialized = true;
   }
 
-  /// Get list of all files with param [fileType]
+  /// Get list of all files with param [fileType].
   Future<List<drive.File>> fileList({
     GoogleFileType fileType = GoogleFileType.all,
   }) async {
@@ -36,7 +30,7 @@ class GoogleDriveHelper {
     final q = fileType.toQ;
     do {
       final fileList = await _driveApi.files.list(
-        spaces: _spaces,
+        spaces: spaces,
         pageToken: nextPageToken,
         $fields: '*',
         q: q,
@@ -48,7 +42,7 @@ class GoogleDriveHelper {
     return results;
   }
 
-  /// Update file with [fileId]
+  /// Update file with [fileId].
   Future<String> update({
     required String fileId,
     String? fileName,
@@ -66,7 +60,7 @@ class GoogleDriveHelper {
     required List<int> bytes,
   }) async {
     final drive.File file = drive.File();
-    file.parents = <String>[_spaces];
+    file.parents = <String>[spaces];
     file.name = fileName;
 
     final Stream<List<int>> mediaStream =
@@ -80,7 +74,7 @@ class GoogleDriveHelper {
     return result.id ?? '';
   }
 
-  /// Upload file as String
+  /// Upload file as String.
   Future<drive.File> upload({
     String? fileName,
     required String content,
@@ -95,14 +89,14 @@ class GoogleDriveHelper {
     );
   }
 
-  /// Upload file as bytes
+  /// Upload file as bytes.
   Future<drive.File> uploadAsBytes({
     String? fileName,
     required List<int> bytes,
     String? parentID,
   }) async {
     final drive.File file = drive.File();
-    file.parents = parentID != null ? [parentID] : <String>[_spaces];
+    file.parents = parentID != null ? [parentID] : <String>[spaces];
     file.name = fileName;
     final Stream<List<int>> mediaStream =
         Future<List<int>>.value(bytes).asStream().asBroadcastStream();
@@ -114,13 +108,13 @@ class GoogleDriveHelper {
     return result;
   }
 
-  /// Create folder
+  /// Create folder.
   Future<drive.File?> createFolder({
     String? folderName,
     String? parentId,
   }) async {
     final drive.File file = drive.File();
-    file.parents = parentId != null ? [parentId] : <String>[_spaces];
+    file.parents = parentId != null ? [parentId] : <String>[spaces];
     file.name = folderName;
     file.mimeType = 'application/vnd.google-apps.folder';
 
@@ -129,22 +123,22 @@ class GoogleDriveHelper {
     return result;
   }
 
-  /// Delete file with [fileId]
+  /// Delete file with [fileId].
   Future delete(String fileId) async {
     await _driveApi.files.delete(fileId);
   }
 
-  /// Download file and return as String
+  /// Download file and return as String.
   Future<String> download(String fileId) async {
     return const Utf8Decoder().convert(await downloadAsBytes(fileId));
   }
 
-  /// Download file and return as bytes
+  /// Download file and return as bytes.
   Future<List<int>> downloadAsBytes(String fileId) async {
     final drive.Media result = await _driveApi.files.get(fileId,
         downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
 
-    // Convert from multiple list from stream to list
+    // Convert from multiple list from stream to list.
     final List<List<int>> contentMultipleList = await result.stream.toList();
     final List<int> contentList = <int>[];
     contentMultipleList.forEach(contentList.addAll);
@@ -152,6 +146,7 @@ class GoogleDriveHelper {
     return contentList;
   }
 
+  /// Delete all [fileType]s.
   Future<void> deleteAll({GoogleFileType fileType = GoogleFileType.all}) async {
     final list = await fileList(fileType: fileType);
     for (var element in list) {
