@@ -60,7 +60,6 @@ class GoogleDriveHelper {
     required List<int> bytes,
   }) async {
     final drive.File file = drive.File();
-    file.parents = <String>[spaces];
     file.name = fileName;
 
     final Stream<List<int>> mediaStream =
@@ -69,7 +68,7 @@ class GoogleDriveHelper {
     final drive.Media media = drive.Media(mediaStream, bytes.length);
 
     final drive.File result = await _driveApi.files
-        .update(file, fileId, uploadMedia: media, $fields: '*');
+        .update(file, fileId, uploadMedia: media, $fields: 'id');
 
     return result.id ?? '';
   }
