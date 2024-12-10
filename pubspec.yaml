@@ -1,6 +1,6 @@
 name: google_drive_helper
 description: Make it easier for you to use google drive on all platforms.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/lamnhan066/google_drive_helper
 
 environment:

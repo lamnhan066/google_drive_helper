@@ -46,21 +46,29 @@ class GoogleDriveHelper {
   Future<String> update({
     required String fileId,
     String? fileName,
+    String? description,
     required String content,
   }) async {
     final List<int> codeUnits = const Utf8Encoder().convert(content);
 
-    return updateAsBytes(fileId: fileId, fileName: fileName, bytes: codeUnits);
+    return updateAsBytes(
+      fileId: fileId,
+      fileName: fileName,
+      description: description,
+      bytes: codeUnits,
+    );
   }
 
   /// Update file with [fileId] as bytes content.
   Future<String> updateAsBytes({
     required String fileId,
     String? fileName,
+    String? description,
     required List<int> bytes,
   }) async {
     final drive.File file = drive.File();
     file.name = fileName;
+    file.description = description;
 
     final Stream<List<int>> mediaStream =
         Future<List<int>>.value(bytes).asStream().asBroadcastStream();
@@ -76,6 +84,7 @@ class GoogleDriveHelper {
   /// Upload file as String.
   Future<drive.File> upload({
     String? fileName,
+    String? description,
     required String content,
     String? parentID,
   }) async {
@@ -83,6 +92,7 @@ class GoogleDriveHelper {
 
     return uploadAsBytes(
       fileName: fileName,
+      description: description,
       bytes: codeUnits,
       parentID: parentID,
     );
@@ -91,12 +101,14 @@ class GoogleDriveHelper {
   /// Upload file as bytes.
   Future<drive.File> uploadAsBytes({
     String? fileName,
+    String? description,
     required List<int> bytes,
     String? parentID,
   }) async {
     final drive.File file = drive.File();
     file.parents = parentID != null ? [parentID] : <String>[spaces];
     file.name = fileName;
+    file.description = description;
     final Stream<List<int>> mediaStream =
         Future<List<int>>.value(bytes).asStream().asBroadcastStream();
     final drive.Media media = drive.Media(mediaStream, bytes.length);
