@@ -1,14 +1,14 @@
 name: google_drive_helper
 description: Make it easier for you to use google drive on all platforms.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/lamnhan066/google_drive_helper
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  googleapis: ^12.0.0
-  googleapis_auth: ^1.4.1
+  googleapis: ^14.0.0
+  googleapis_auth: ^2.0.0
   http: ^1.1.0
 
 dev_dependencies:
