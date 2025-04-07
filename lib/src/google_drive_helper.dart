@@ -93,6 +93,7 @@ class GoogleDriveHelper {
 
   /// Upload file as String.
   Future<drive.File> upload({
+    String? fileId,
     String? fileName,
     String? description,
     required String content,
@@ -101,6 +102,7 @@ class GoogleDriveHelper {
     final List<int> codeUnits = const Utf8Encoder().convert(content);
 
     return uploadAsBytes(
+      fileId: fileId,
       fileName: fileName,
       description: description,
       bytes: codeUnits,
@@ -110,12 +112,14 @@ class GoogleDriveHelper {
 
   /// Upload file as bytes.
   Future<drive.File> uploadAsBytes({
+    String? fileId,
     String? fileName,
     String? description,
     required List<int> bytes,
     String? parentID,
   }) async {
     final drive.File file = drive.File();
+    file.id = fileId;
     file.parents = parentID != null ? [parentID] : <String>[spaces];
     file.name = fileName;
     file.description = description;
@@ -131,10 +135,12 @@ class GoogleDriveHelper {
 
   /// Create folder.
   Future<drive.File?> createFolder({
+    String? fileId,
     String? folderName,
     String? parentId,
   }) async {
     final drive.File file = drive.File();
+    file.id = fileId;
     file.parents = parentId != null ? [parentId] : <String>[spaces];
     file.name = folderName;
     file.mimeType = 'application/vnd.google-apps.folder';
