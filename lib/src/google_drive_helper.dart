@@ -21,6 +21,16 @@ class GoogleDriveHelper {
     _driveApi = drive.DriveApi(client);
   }
 
+  /// Generate [count] of unique file ids.
+  Future<List<String>> generateIds(int count) async {
+    final generatedIds = await _driveApi.files.generateIds(
+      count: count,
+      space: spaces,
+    );
+
+    return generatedIds.ids ?? [];
+  }
+
   /// Get list of all files with param [fileType].
   Future<List<drive.File>> fileList({
     GoogleFileType fileType = GoogleFileType.all,
